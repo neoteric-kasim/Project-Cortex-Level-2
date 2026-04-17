@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+azure-storage-file-datalake
+python-multipart
