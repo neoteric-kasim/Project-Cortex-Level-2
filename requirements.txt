@@ -2,3 +2,8 @@ fastapi
 uvicorn
 azure-storage-file-datalake
 python-multipart
+python-dotenv
+pandas
+pyarrow
+llama-index
+openai
