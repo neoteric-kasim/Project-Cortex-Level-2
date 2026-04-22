@@ -1,9 +1,10 @@
 import traceback
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from app.services.rag import query_index
+from app.auth import get_user
 
-router = APIRouter(prefix="/api/v1/agent", tags=["Agent"])
+router = APIRouter(tags=["Agent"])
 
 
 class ChatRequest(BaseModel):
@@ -11,8 +12,11 @@ class ChatRequest(BaseModel):
 
 
 @router.post("/chat")
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, user=Depends(get_user)):
     try:
+        # ✅ Debug user (optional but useful)
+        print("👤 USER:", user.get("preferred_username"))
+
         question = req.question.strip()
 
         if not question:

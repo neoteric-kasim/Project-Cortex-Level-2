@@ -4,12 +4,21 @@ from app.services.rag import load_index
 from app.routes import agent
 from app.routes import files
 from app.routes.agent import router as agent_router
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 
 
 app = FastAPI(title="Project Cortex API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup_event():

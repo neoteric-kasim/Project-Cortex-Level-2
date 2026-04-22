@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RAG App</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        input, button { margin: 5px; padding: 8px; }
+        #app { display: none; }
+    </style>
+</head>
+<body>
+
+<h2>Login / Signup</h2>
+
+<div id="auth">
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <br>
+    <button onclick="signup()">Signup</button>
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="app">
+    <h2>Dashboard</h2>
+
+    <h3>📂 List Files</h3>
+    <button onclick="listFiles()">Load Files</button>
+    <pre id="files"></pre>
+
+    <h3>⬆️ Upload File</h3>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+
+    <h3>💬 Chat (RAG)</h3>
+    <input id="question" placeholder="Ask something">
+    <button onclick="ask()">Ask</button>
+    <pre id="answer"></pre>
+</div>
+
+<script>
+let token = null;
+
+// ------------------- AUTH -------------------
+async function signup() {
+    const res = await fetch("http://127.0.0.1:8000/signup", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            username: username.value,
+            password: password.value
+        })
+    });
+
+    alert(await res.text());
+}
+
+async function login() {
+    const res = await fetch("http://127.0.0.1:8000/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            username: username.value,
+            password: password.value
+        })
+    });
+
+    const data = await res.json();
+
+    token = data.access_token;
+
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("app").style.display = "block";
+}
+
+// ------------------- FILE LIST -------------------
+async function listFiles() {
+    const res = await fetch("http://127.0.0.1:8000/files", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await res.json();
+    document.getElementById("files").innerText = JSON.stringify(data, null, 2);
+}
+
+// ------------------- UPLOAD -------------------
+async function uploadFile() {
+    const file = document.getElementById("fileInput").files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    await fetch("http://127.0.0.1:8000/upload", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token },
+        body: formData
+    });
+
+    alert("Uploaded!");
+}
+
+// ------------------- CHAT -------------------
+async function ask() {
+    const res = await fetch("http://127.0.0.1:8000/api/v1/agent/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+            question: document.getElementById("question").value
+        })
+    });
+
+    const data = await res.json();
+    document.getElementById("answer").innerText = data.answer;
+}
+</script>
+
+</body>
+</html>
