@@ -5,5 +5,16 @@ python-multipart
 python-dotenv
 pandas
 pyarrow
-llama-index
 openai
+requests
+
+# llama-index modular packages (v0.10+)
+llama-index-core
+llama-index-llms-azure-openai
+llama-index-embeddings-huggingface
+sentence-transformers
+transformers
+torch
+
+# auth
+python-jose[cryptography]
